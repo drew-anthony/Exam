@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Quotes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    <a href='/logout'><button type="submit"  class="btn btn-primary">Logout</button></a>
+    <a href='/edit'><button type="submit"  class="btn btn-link">Edit My Account</button></a>
+    welcome {{user.first_name}}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <form method="Post" action='/quote'>
+        {%csrf_token %}
+        <div class="form-group col-6">
+            <label for="Textarea1">Author</label>
+            <textarea class="form-control" id="Textarea1" name="author" rows="3"></textarea>
+            <input type="hidden" name="user_quote_id" value="{{request.session.user_id}}">
+            <br>            
+            <label for="Textarea1">Post a Quote</label>
+            <textarea class="form-control" id="Textarea1" name="liveQuote" rows="3"></textarea>
+            <br>
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </div>
+    </form>    
+    {%for i in quotes%}
+    <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+        <div class="card-header">Quote</div>
+        <div class="card-body">
+            <p class="card-text">{{i.author}}</p>
+            <p class="card-text">{{i.content}}</p>
+
+            Posted By:<a href="user/{{i.one.id}}"><Button type="submit" class="btn btn-link" name='liveUser'>{{i.one.first_name}}</Button></a>
+        </div>
+        <div>
+            {% if i.one.id == request.session.user_id %}
+            <form action='delete' method='post'>
+                {% csrf_token %}
+                <Button type='submit' class="btn btn-link">Delete</Button>
+                <input type='hidden' name='del' value="{{i.id}}">
+            </form>
+            {% endif %}
+        </div>
+        {% if i.likes.id == request.session.user_id %}
+        <p>You already like this</p>
+        {% else %}
+        <a href="/liked"><Button type="submit" class="btn btn-link" name='liked'>Like</Button></a>
+        {% endif %}
+        
+    </div>
+    {%endfor%}
